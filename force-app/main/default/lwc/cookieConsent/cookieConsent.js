@@ -1,8 +1,8 @@
 import { LightningElement, track, api } from "lwc";
 import getCookieData from "@salesforce/apex/CookieConsentService.getCookieData";
-import createCookieConsentRecords from "@salesforce/apex/CookieConsentService.createCookieConsentRecords";
+import createCookieConsentRecords from "@salesforce/apex/CookieConsentServiceGuestHelper.createCookieConsentRecords";
 import verifyBrowserId from "@salesforce/apex/CookieConsentService.verifyBrowserId";
-import getCookiesToDelete from "@salesforce/apex/CookieConsentService.getCookiesToDelete";
+import getCookiesToDelete from "@salesforce/apex/CookieConsentServiceGuestHelper.getCookiesToDelete";
 
 export default class CookieConsent extends LightningElement {
   // State
@@ -119,7 +119,7 @@ export default class CookieConsent extends LightningElement {
 
   verifyBrowserId() {
     verifyBrowserId({ browserId: this.uniqueId })
-      .then(data => {
+      .then((data) => {
         if (data === false) {
           this.getCookieSectionsAndData();
         } else if (this.displayType === "page") {
@@ -129,20 +129,20 @@ export default class CookieConsent extends LightningElement {
         }
         this.showCookieDialog = !data;
       })
-      .catch(error => {
+      .catch((error) => {
         this.error = error.message;
       });
   }
 
   getCookieSectionsAndData() {
     getCookieData()
-      .then(data => {
+      .then((data) => {
         this.cookieData = [...data];
 
         this.setStartingCookiePreferences(data);
         this.loading = false;
       })
-      .catch(error => {});
+      .catch((error) => {});
   }
 
   setStartingCookiePreferences(cookieData) {
@@ -153,14 +153,14 @@ export default class CookieConsent extends LightningElement {
 
   getCookiesAndDeleteThem() {
     getCookiesToDelete({ browserId: this.uniqueId })
-      .then(data => {
+      .then((data) => {
         if (this.useRelaxedCSP) {
           this.deleteCookiesOutsideLocker(data);
         } else {
           this.deleteCookiesInsideLocker(data);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         this.error = error.message;
       });
   }
@@ -181,10 +181,10 @@ export default class CookieConsent extends LightningElement {
 
   acceptCookies() {
     createCookieConsentRecords({ browserId: this.uniqueId, cookiePreferences: this.cookiePreferences })
-      .then(data => {
+      .then((data) => {
         this.showCookieDialog = false;
       })
-      .catch(error => {
+      .catch((error) => {
         this.error = error.message;
       });
   }
