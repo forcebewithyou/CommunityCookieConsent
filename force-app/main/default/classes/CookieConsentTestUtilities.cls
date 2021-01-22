@@ -1,73 +1,92 @@
 @isTest
 public with sharing class CookieConsentTestUtilities {
+  @future
+  public static void createUser() {
+    List<Profile> profiles = [SELECT Id FROM Profile WHERE Name = 'Customer Community Profile' LIMIT 1];
+    Profile profile = (profiles.size() == 1) ? profiles.get(0) : null;
 
-    @future
-    public static void createUser(){
+    User user = new User(
+      Username = 'test@cookieconsent.com',
+      FirstName = 'First',
+      LastName = 'Last',
+      Email = 'example@example.com',
+      ProfileId = profile.Id,
+      CompanyName = 'Test',
+      Title = 'Title',
+      Alias = 'alias',
+      TimeZoneSidKey = 'America/Los_Angeles',
+      EmailEncodingKey = 'UTF-8',
+      LanguageLocaleKey = 'en_US',
+      LocaleSidKey = 'en_US'
+    );
 
-        List<Profile> profiles = [SELECT Id FROM Profile WHERE Name = 'Customer Community Profile' LIMIT 1];
-        Profile profile = (profiles.size() == 1) ? profiles.get(0) : null;
+    insert user;
 
-        User user = new User(Username = 'test@cookieconsent.com', FirstName = 'First', LastName = 'Last', Email = 'example@example.com', ProfileId = profile.Id, CompanyName = 'Test', Title ='Title', Alias = 'alias', TimeZoneSidKey = 'America/Los_Angeles', EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US');
+    List<PermissionSet> permissionSets = [SELECT Id FROM PermissionSet WHERE Name = 'Cookie_Consent_Guest_User' LIMIT 1];
+    PermissionSet permissionSet = (permissionSets.size() == 1) ? permissionSets.get(0) : null;
 
-        insert user;
+    PermissionSetAssignment permissionSetAssignment = new PermissionSetAssignment(PermissionSetId = permissionSet.Id, AssigneeId = user.Id);
 
-        List<PermissionSet> permissionSets = [SELECT Id FROM PermissionSet WHERE Name = 'Cookie_Consent_Guest_User' LIMIT 1];
-        PermissionSet permissionSet = (permissionSets.size() == 1) ? permissionSets.get(0) : null;
+    insert permissionSetAssignment;
+  }
 
-        PermissionSetAssignment permissionSetAssignment = new PermissionSetAssignment(PermissionSetId = permissionSet.Id, AssigneeId = user.Id);
+  @future
+  public static void createStandardUser() {
+    List<Profile> profiles = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
+    Profile profile = (profiles.size() == 1) ? profiles.get(0) : null;
 
-        insert permissionSetAssignment;
+    User user = new User(
+      Username = 'standard@cookieconsent.com',
+      FirstName = 'First',
+      LastName = 'Last',
+      Email = 'example@example.com',
+      ProfileId = profile.Id,
+      CompanyName = 'Test',
+      Title = 'Title',
+      Alias = 'alias',
+      TimeZoneSidKey = 'America/Los_Angeles',
+      EmailEncodingKey = 'UTF-8',
+      LanguageLocaleKey = 'en_US',
+      LocaleSidKey = 'en_US'
+    );
 
-    }
+    insert user;
 
-    @future
-    public static void createStandardUser(){
+    List<PermissionSet> permissionSets = [SELECT Id FROM PermissionSet WHERE Name = 'Cookie_Consent_Guest_User' LIMIT 1];
+    PermissionSet permissionSet = (permissionSets.size() == 1) ? permissionSets.get(0) : null;
 
-        List<Profile> profiles = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
-        Profile profile = (profiles.size() == 1) ? profiles.get(0) : null;
+    PermissionSetAssignment permissionSetAssignment = new PermissionSetAssignment(PermissionSetId = permissionSet.Id, AssigneeId = user.Id);
 
-        User user = new User(Username = 'standard@cookieconsent.com', FirstName = 'First', LastName = 'Last', Email = 'example@example.com', ProfileId = profile.Id, CompanyName = 'Test', Title ='Title', Alias = 'alias', TimeZoneSidKey = 'America/Los_Angeles', EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US');
+    insert permissionSetAssignment;
+  }
 
-        insert user;
+  public static CookieConsentCategory__c createCookieConsentCategory() {
+    CookieConsentCategory__c cookieConsentCategory = new CookieConsentCategory__c(
+      Name = 'Test',
+      Description__c = 'Description',
+      DefaultValue__c = true,
+      Manditory__c = true,
+      AdditionalInformation__c = 'Test'
+    );
 
-        List<PermissionSet> permissionSets = [SELECT Id FROM PermissionSet WHERE Name = 'Cookie_Consent_Guest_User' LIMIT 1];
-        PermissionSet permissionSet = (permissionSets.size() == 1) ? permissionSets.get(0) : null;
+    insert cookieConsentCategory;
 
-        PermissionSetAssignment permissionSetAssignment = new PermissionSetAssignment(PermissionSetId = permissionSet.Id, AssigneeId = user.Id);
+    return cookieConsentCategory;
+  }
 
-        insert permissionSetAssignment;
+  public static Cookie__c createCookie(Id categoryId) {
+    Cookie__c cookie = new Cookie__c(Name = 'Test', Description__c = 'Test', CookieConsentCategory__c = categoryId);
 
-    }
+    insert cookie;
 
-    public static cookiecon__CookieConsentCategory__c createCookieConsentCategory(){
+    return cookie;
+  }
 
-        cookiecon__CookieConsentCategory__c cookieConsentCategory = new cookiecon__CookieConsentCategory__c(Name = 'Test', cookiecon__Description__c = 'Description', cookiecon__DefaultValue__c = true, cookiecon__Manditory__c = true, cookiecon__AdditionalInformation__c = 'Test');
+  public static Individual createIndividual() {
+    Individual newIndividual = new Individual(FirstName = 'Test', LastName = 'Test', BrowserId__c = '123456789');
 
-        insert cookieConsentCategory;
+    insert newIndividual;
 
-        return cookieConsentCategory;
-
-    }
-
-    public static cookiecon__Cookie__c createCookie(Id categoryId){
-
-        cookiecon__Cookie__c cookie = new cookiecon__Cookie__c(Name = 'Test', cookiecon__Description__c = 'Test', cookiecon__CookieConsentCategory__c = categoryId);
-
-        insert cookie;
-
-        return cookie;
-
-    }
-
-    public static Individual createIndividual() {
-
-        Individual newIndividual = new Individual(FirstName = 'Test', LastName = 'Test', cookiecon__BrowserId__c = '123456789');
-
-        insert newIndividual;
-
-        return newIndividual;
-
-    }
-
-
+    return newIndividual;
+  }
 }
