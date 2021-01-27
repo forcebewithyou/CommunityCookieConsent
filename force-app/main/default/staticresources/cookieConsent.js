@@ -9,13 +9,13 @@ if (window.XMLHttpRequest) {
   xmlhttp.open("POST", "/_/52609e00b7ee307e", false);
   xmlhttp.send(null);
 }
-window.addEventListener("componentConnected", function(e) {
+window.addEventListener("cookielwc__componentconnected", function (e) {
   let cookies = document.cookie;
-  let event = new CustomEvent("documentCookies", { detail: cookies });
+  let event = new CustomEvent("cookielwc__documentcookies", { detail: cookies });
   window.dispatchEvent(event);
 });
 
-window.addEventListener("deleteCookies", function(e) {
+window.addEventListener("cookielwc__deletecookies", function (e) {
   let cookies = e.detail;
   for (let i = 0, len = cookies.length; i < len; i++) {
     let cookieWithStandardPath = cookies[i] + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;";

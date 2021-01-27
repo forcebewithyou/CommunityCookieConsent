@@ -41,8 +41,9 @@ export default class CookieConsent extends LightningElement {
       this.getBrowserIdCookie();
     } else if (!this.useRelaxedCSP && !this.preview) {
       try {
-        this.receiveCookiesFromHead = this.receiveCookiesFromHead.bind(this);
-        window.addEventListener("documentCookies", this.receiveCookiesFromHead, false);
+        // this.receiveCookiesFromHead = this.receiveCookiesFromHead.bind(this);
+        window.addEventListener("cookielwc__documentcookies", this.receiveCookiesFromHead.bind(this));
+        // window.addEventListener("cookielwc__documentcookies", this.receiveCookiesFromHead, false);
       } catch (e) {
         console.log("error: " + e);
       }
@@ -63,7 +64,7 @@ export default class CookieConsent extends LightningElement {
   }
 
   getCookiesFromHead() {
-    let event = new CustomEvent("componentConnected");
+    let event = new CustomEvent("cookielwc__componentconnected");
     window.dispatchEvent(event);
   }
 
@@ -118,20 +119,25 @@ export default class CookieConsent extends LightningElement {
   }
 
   verifyBrowserId() {
-    verifyBrowserId({ browserId: this.uniqueId })
-      .then((data) => {
-        if (data === false) {
-          this.getCookieSectionsAndData();
-        } else if (this.displayType === "page") {
-          this.getCookieSectionsAndData();
-        } else if (data === true) {
-          this.getCookiesAndDeleteThem();
-        }
-        this.showCookieDialog = !data;
-      })
-      .catch((error) => {
-        this.error = error.message;
-      });
+    try {
+      verifyBrowserId({ browserId: this.uniqueId })
+        .then((data) => {
+          if (data === false) {
+            this.getCookieSectionsAndData();
+          } else if (this.displayType === "page") {
+            this.getCookieSectionsAndData();
+          } else if (data === true) {
+            this.getCookiesAndDeleteThem();
+          }
+          this.showCookieDialog = !data;
+        })
+        .catch((error) => {
+          this.error = error.message;
+          console.log(`apex call failed with error - ${JSON.stringify(error)}`);
+        });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   getCookieSectionsAndData() {
@@ -175,7 +181,7 @@ export default class CookieConsent extends LightningElement {
   }
 
   deleteCookiesInsideLocker(cookies) {
-    let event = new CustomEvent("deleteCookies", { detail: cookies });
+    let event = new CustomEvent("cookielwc__deletecookies", { detail: cookies });
     window.dispatchEvent(event);
   }
 
