@@ -76,6 +76,7 @@ public without sharing class CookieConsentServiceGuestHelper {
   public static Id createIndividualRecord(Id userId, String browserId) {
     List<Individual> newIndividuals = new List<Individual>();
     Individual newIndividual = new Individual(LastName = browserId, BrowserId__c = browserId);
+    newIndividual.wint__Email__c = browserId + '@' + browserId + '.com';
     newIndividual.wint__Country__c = 'US';
     newIndividuals.add(newIndividual);
     /*
